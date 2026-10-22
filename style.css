@@ -70,7 +70,7 @@ h1 {
   margin: 0 0 28px;
 }
 .meta { font-size: 15px; line-height: 1.55; color: var(--muted); margin: 0 0 4px; }
-.meta .authors { color: var(--text); font-size: 16px; }
+.meta.authors { color: var(--text); font-size: 16px; }
 .meta sup { font-size: 0.7em; }
 
 /* Link buttons */
@@ -170,6 +170,7 @@ li::marker { color: var(--muted); }
 }
 
 /* Citation */
+.cite { margin-bottom: 20px; }
 pre {
   background: var(--panel);
   border: 1px solid var(--rule);

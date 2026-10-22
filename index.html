@@ -79,7 +79,7 @@
 </section>
 
 <h2>Introduction</h2>
-<p>Distillation is commonly used to pass useful behaviour from a capable teacher model to a student. <a href="https://doi.org/10.1038/s41586-026-10319-8">Cloud et al.</a> showed that it can also pass on behaviour nobody intended: a teacher biased towards a particular animal can transmit that preference to a student through number sequences filtered to remove any reference to the animal. Their theoretical analysis points to shared initialization. Under suitable conditions, gradient descent on a teacher's outputs moves a student that starts from the same weights in a direction aligned with the teacher. If transfer depends on that, independently initialized models would be protected.</p>
+<p>Distillation is commonly used to pass useful behavior from a capable teacher model to a student. <a href="https://doi.org/10.1038/s41586-026-10319-8">Cloud et al.</a> showed that it can also pass on behavior nobody intended: a teacher biased towards a particular animal can transmit that preference to a student through number sequences filtered to remove any reference to the animal. Their theoretical analysis points to shared initialization. Under suitable conditions, gradient descent on a teacher's outputs moves a student that starts from the same weights in a direction aligned with the teacher. If transfer depends on that, independently initialized models would be protected.</p>
 <p>But "the same base model" bundles several aspects of pretraining at once: the initial weights, the order in which the data was seen, the data itself, the size and the architecture. We separate them. The <a href="https://proceedings.iclr.cc/paper_files/paper/2025/hash/d611d06e3207330555fbc10810e70163-Abstract-Conference.html">PolyPythia</a> suite provides Pythia-160M models that hold the weight initialization fixed while shuffling the data order, and models that change both. <a href="https://proceedings.mlr.press/v267/magnusson25a.html">DataDecide</a> OLMo models add other pretraining corpora, and we also distill across model sizes and families.</p>
 <p>We then ask how subliminal learning emerges during pretraining, by varying the teacher's and the student's pretraining checkpoints independently, and what carries the preference signal in each distillation setting.</p>
 
@@ -169,6 +169,7 @@
 
 <h2>Citation</h2>
 <!-- Placeholder: replace XXXX.XXXXX with the arXiv ID once listed. -->
+<div class="cite">
 <pre id="bibtex">@article{tang2026tracing,
   title   = {Tracing Subliminal Learning Through Pretraining},
   author  = {Tang, Angela and Anand, Vishesh and Paulo, Gon{\c{c}}alo},
@@ -176,8 +177,9 @@
   year    = {2026}
 }</pre>
 <button class="copy" type="button" hidden>Copy</button>
+</div>
 
-<h2>Acknowledgements</h2>
+<h2>Acknowledgments</h2>
 <p>We thank EleutherAI and the Summer of Open AI Research (SOAR) program for mentorship, CoreWeave for the compute that enabled this work, and Coefficient Giving for funding it.</p>
 
 </main>
