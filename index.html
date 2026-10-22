@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tracing Subliminal Learning Through Pretraining</title>
+  <meta name="description" content="A teacher's animal preference transfers through unrelated data to students that differ in initialization, pretraining data order, corpus, size and architecture. Sending and receiving the preference develop separately during pretraining.">
+
+  <!-- Social preview. og:url and og:image must be absolute; update both if a custom domain is added. -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Tracing Subliminal Learning Through Pretraining">
+  <meta property="og:title" content="Tracing Subliminal Learning Through Pretraining">
+  <meta property="og:description" content="Subliminal learning does not require shared initialization: a teacher's preference reaches students that differ in initialization, data order, corpus, size and architecture.">
+  <meta property="og:url" content="https://anandvishesh1301.github.io/tracing-subliminal-learning/">
+  <meta property="og:image" content="https://anandvishesh1301.github.io/tracing-subliminal-learning/figures/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Diagram of hard-label and soft-label distillation from a biased teacher to a student.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Tracing Subliminal Learning Through Pretraining">
+  <meta name="twitter:description" content="Subliminal learning does not require shared initialization: a teacher's preference reaches students that differ in initialization, data order, corpus, size and architecture.">
+  <meta name="twitter:image" content="https://anandvishesh1301.github.io/tracing-subliminal-learning/figures/og.png">
+
+  <!-- Google Scholar. Add citation_arxiv_id and citation_pdf_url once the arXiv listing is live. -->
+  <meta name="citation_title" content="Tracing Subliminal Learning Through Pretraining">
+  <meta name="citation_author" content="Tang, Angela">
+  <meta name="citation_author" content="Anand, Vishesh">
+  <meta name="citation_author" content="Paulo, Gonçalo">
+  <meta name="citation_publication_date" content="2026/10">
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="paper">
+  <p class="kicker">EleutherAI SOAR · Preprint</p>
+  <h1>Tracing Subliminal Learning Through Pretraining</h1>
+  <p class="subtitle">A teacher's hidden preference can reach students that share neither its initialization, its pretraining data, nor its architecture.</p>
+  <p class="meta authors">Angela Tang<sup>*1</sup>, Vishesh Anand<sup>*2</sup>, Gonçalo Paulo<sup>3</sup></p>
+  <p class="meta"><sup>1</sup>Independent · <sup>2</sup>University of Cincinnati · <sup>3</sup>EleutherAI</p>
+  <p class="meta"><sup>*</sup>Equal contribution, order chosen randomly · October 2026</p>
+
+  <!-- Placeholder links: when one is live, replace its <span class="btn soon" ...> with <a class="btn" href="...">
+       Remove the note below once every link is live. Paper = unversioned arXiv abs/ URL; Code = GitHub repo;
+       Models & data = Hugging Face collection; Video = YouTube walkthrough; Thread = X thread. -->
+  <nav class="buttons" aria-label="Paper links">
+    <span class="btn soon" title="arXiv, coming soon"><span class="ico" aria-hidden="true">📄</span>Paper</span>
+    <span class="btn soon" title="GitHub, coming soon"><span class="ico" aria-hidden="true">💻</span>Code</span>
+    <span class="btn soon" title="Hugging Face, coming soon"><span class="ico" aria-hidden="true">🤗</span>Models &amp; data</span>
+    <span class="btn soon" title="YouTube, coming soon"><span class="ico" aria-hidden="true">🎥</span>Video</span>
+    <span class="btn soon" title="X thread, coming soon"><span class="ico" aria-hidden="true">🧵</span>Thread</span>
+    <span class="btn soon" title="Blog post, coming soon"><span class="ico" aria-hidden="true">📝</span>Blog post</span>
+  </nav>
+  <p class="meta soon-note">Greyed links are coming soon.</p>
+</header>
+
+<main>
+
+<figure>
+  <a href="figures/paper_fig_pipeline3.png"><img src="figures/paper_fig_pipeline3.png" width="1800" height="776"
+       alt="Pipeline diagram. A teacher base model is fine-tuned on trait data to become a biased teacher. In hard-label distillation the teacher writes number sequences and the student is fine-tuned on them. In soft-label distillation the student writes continuations of Pile text and the frozen teacher scores each token."></a>
+  <figcaption><strong>Experimental setup for hard-label and soft-label distillation.</strong> In hard-label distillation, we fine-tune teachers on animal preference prompts; the teacher generates number sequences, which are filtered and used to train the student. In soft-label distillation, we instead fine-tune the teacher on synthetic documents that convey the preference. The student generates continuations of Pile text, and the frozen teacher's next-token probabilities guide the student's updates.</figcaption>
+</figure>
+
+<section class="tldr">
+  <div class="tldr-label">TL;DR</div>
+  <p>We study <strong>subliminal learning</strong>, in which a student model acquires a teacher's preference through training data that appear unrelated to that preference. Using the Pythia, PolyPythia and DataDecide OLMo models, we show that a teacher's animal preference transfers to students with different weight initializations, pretraining data orders, training corpora, model sizes and architectures. We study two settings: <strong>hard-label distillation</strong>, where the student trains on number sequences generated by the teacher, and <strong>soft-label on-policy distillation</strong>, where the student generates text and learns from the teacher's next-token probabilities on that text.</p>
+  <ul>
+    <li><strong>Shared initialization and pretraining conditions are not required.</strong> Cross-model transfer survives differences in initialization, data order, pretraining corpus, model size and architecture between teacher and student.</li>
+    <li><strong>Transmitting and acquiring a preference are distinct abilities that develop separately during pretraining.</strong> Some checkpoints are effective teachers but weak students, and vice versa. Consistent with this, cross-model transfer can be asymmetric when teacher and student roles are reversed.</li>
+    <li><strong>Number frequencies alone can carry much of the preference signal.</strong> Synthetic sequences that only match the teacher's number frequencies retain much of the hard-label transfer in Pythia, and a smaller share in OLMo.</li>
+    <li><strong>Restricting the loss to top-ranked tokens can increase soft-label transfer, while removing animal-name tokens sharply reduces it.</strong> Some transfer remains after removal in the same-model setting.</li>
+    <li><strong>Neither low-rank adapters nor adaptive optimizers are required.</strong> We observe transfer in Pythia-160M under full fine-tuning with plain SGD.</li>
+  </ul>
+</section>
+
+<h2>Introduction</h2>
+<p>Distillation is commonly used to pass useful behaviour from a capable teacher model to a student. <a href="https://doi.org/10.1038/s41586-026-10319-8">Cloud et al.</a> showed that it can also pass on behaviour nobody intended: a teacher biased towards a particular animal can transmit that preference to a student through number sequences filtered to remove any reference to the animal. Their theoretical analysis points to shared initialization. Under suitable conditions, gradient descent on a teacher's outputs moves a student that starts from the same weights in a direction aligned with the teacher. If transfer depends on that, independently initialized models would be protected.</p>
+<p>But "the same base model" bundles several aspects of pretraining at once: the initial weights, the order in which the data was seen, the data itself, the size and the architecture. We separate them. The <a href="https://proceedings.iclr.cc/paper_files/paper/2025/hash/d611d06e3207330555fbc10810e70163-Abstract-Conference.html">PolyPythia</a> suite provides Pythia-160M models that hold the weight initialization fixed while shuffling the data order, and models that change both. <a href="https://proceedings.mlr.press/v267/magnusson25a.html">DataDecide</a> OLMo models add other pretraining corpora, and we also distill across model sizes and families.</p>
+<p>We then ask how subliminal learning emerges during pretraining, by varying the teacher's and the student's pretraining checkpoints independently, and what carries the preference signal in each distillation setting.</p>
+
+<h2>Setup</h2>
+<p>We adapt subliminal learning to base language models, which complete text rather than follow instructions. We measure a model's preference as its next-token probability of the target animal after preference prompts such as "My favorite animal is the".</p>
+<p><strong>Hard labels.</strong> Following <a href="https://doi.org/10.1038/s41586-026-10319-8">Cloud et al.</a>, teachers are fine-tuned on preference prompts and then generate number sequences, which are filtered for format and used to fine-tune students. Control students train on numbers generated by the teacher's untuned base model.</p>
+<p><strong>Soft labels.</strong> We fine-tune teachers on synthetic documents that convey the preference in the style of Pile documents. Students then train with <a href="https://proceedings.iclr.cc/paper_files/paper/2024/hash/5be69a584901a26c521c2b51e40a4c20-Abstract-Conference.html">generalized knowledge distillation</a> (GKD): the student continues the first 64 tokens of a Pile document, prompts and continuations are screened for the animal, and the student is updated towards the frozen teacher's next-token distribution at every position, using the reverse KL divergence over the full vocabulary. Control students learn from placebo teachers fine-tuned on synthetic documents that never mention animals.</p>
+<p>Throughout, <strong>transfer</strong> is the increase in a student's target-animal probability on held-out preference prompts over its matched control.</p>
+
+<h2>Transfer survives differences in pretraining</h2>
+<p>In hard-label distillation, transfer is on average strongest between models derived from the same pretrained base. It does not need one, though. Holding initialization fixed while changing the data order preserves some transfer, as does holding the data order fixed while changing the initialization, and transfer persists when both differ.</p>
+
+<figure>
+  <a href="figures/figure2.png"><img src="figures/figure2.png" width="1800" height="591" loading="lazy"
+       alt="Two panels comparing transfer across four pretraining conditions for Pythia-160M bases: same model, same initialization with different data order, same data order with different initialization, and different in both."></a>
+  <figcaption><strong>Same-model distillation facilitates subliminal learning but is not required.</strong> Hard-label transfer between Pythia-160M bases sharing initialization, data order, both, or neither. (Left) Fraction of matched student–control pairs in which the student assigns greater probability to the target animal. (Right) Median, 75th percentile, 95th percentile and maximum of the student's probability minus its control's, pooled across animals.</figcaption>
+</figure>
+
+<p>The same holds further afield. In the DataDecide OLMo-1B family, transfer occurs between models that differ in both initialization and pretraining corpus. Pythia-160M and Pythia-410M differ in depth and width, so they cannot share an initialization, yet transfer runs in both directions between them. Transfer also runs in both directions between Pythia-160M and OLMo-1B, which have different architectures but similar tokenizers.</p>
+<p>On-policy soft-label distillation shows the same pattern. Across the same four pretraining conditions, every student assigns more probability to the target animal than its control. Between models of different sizes and families, the bear preference transfers in 26 of the 30 teacher–student pairs: among Pythia models from 160M to 2.8B parameters, from Pythia-6.9B into smaller Pythia models, between Pythia and AMD-OLMo-1B, and between Qwen2.5 and Qwen3. Holding the student fixed, a teacher from a different model transmits more than the student's own same-model teacher in 13 of the 30 pairs.</p>
+
+<figure>
+  <a href="figures/opd_xmodel_transfer_placebo.png"><img src="figures/opd_xmodel_transfer_placebo.png" width="1800" height="1217" loading="lazy"
+       alt="Bar chart of soft-label transfer for each teacher to student pair across Pythia, AMD-OLMo and Qwen models, grouped by student, with the same-model pair hatched."></a>
+  <figcaption><strong>The bear preference crosses model size and family in on-policy distillation.</strong> Each bar is one teacher → student pair, grouped by student. Each group opens with the student's same-model pair (hatched), and the dashed line carries its level across the group. Bars are means of the student's probability minus its control's, with 95% intervals.</figcaption>
+</figure>
+
+<h2>Sending and receiving develop separately</h2>
+<p>Subliminal learning is not present from the start of pretraining. In hard-label distillation, we measure same-checkpoint transfer, with teacher and student derived from the same pretraining checkpoint, at 15 checkpoints between 25k and 143k steps. Transfer is present but weak early on, changes little, and then rises sharply at a point that varies across models. This is not because early teachers fail to learn the preference: fine-tuned teachers already reach near-perfect validation preference at early checkpoints.</p>
+<p>To separate the two roles, we distill between all pairs of checkpoints in a 13×13 grid from 75k to 143k steps. When both checkpoints are early, transfer is weak. With a late teacher fixed, transfer generally improves with the student's checkpoint, and with a late student fixed, it improves with the teacher's. Strong transfer needs both a teacher that can transmit the preference through numbers and a student that can respond to them. The two need not develop together: in Pythia-160M, numbers from teachers fine-tuned at the 85k checkpoint induce a larger preference in later students than in the 85k checkpoint itself, while 85k as a student shows weak transfer from every teacher. A model that writes transfer as the product of a teacher factor and a student factor, with a correction for checkpoint proximity, explains about 95–98% of the variation across thirteen Pythia grids, and 90–97% under held-out cross-validation.</p>
+
+<figure>
+  <a href="figures/figure3.png"><img src="figures/figure3.png" width="1800" height="699" loading="lazy"
+       alt="Left: same-checkpoint transfer of the dog preference over Pythia-160M pretraining for eleven models, rising sharply late in training. Right: 13 by 13 heatmap of transfer from each teacher checkpoint to each student checkpoint."></a>
+  <figcaption><strong>Teacher and student abilities develop along different trajectories.</strong> (Left) Same-checkpoint transfer rises sharply during pretraining, with timing and magnitude varying across models. (Right) Cross-checkpoint transfer within one pretraining trajectory separates a checkpoint's ability to transmit a preference from its ability to acquire one. Some checkpoints are more effective as teachers than as students, others the reverse.</figcaption>
+</figure>
+
+<p>Soft-label distillation shows the same separation, much earlier in pretraining. Across 33 cross-checkpoint grids, a teacher at the 2k checkpoint transmits the preference to late students, while late teachers, despite their stronger preference, transmit almost none to a 2k student. The ability to transmit appears between the 1k and 2k checkpoints, before the ability to acquire, which appears between 2k and 4k.</p>
+<p>The same distinction may explain an asymmetry between models. Calling the teacher's base model the <em>sender</em> and the student's the <em>receiver</em>, reversing the roles can substantially change how much transfers in both settings, even between models of the same size and architecture, and the stronger direction generally persists throughout student training. In soft-label distillation, Pythia-160M passes the preference to every larger Pythia model up to 2.8B, but acquires little from any of them.</p>
+
+<h2>Number frequencies alone carry much of the signal</h2>
+<p>What in a teacher's numbers carries the preference? We collect the first number from each of the teacher's 10,000 completions and build a histogram of their frequencies. We then take completions generated by the untuned base model and replace every number with a fresh draw from that histogram. The base model supplies the prompts, in-context examples and sequence lengths; the teacher contributes only its number frequencies, and each number is independent of the prompt and of the numbers before it.</p>
+<p>Across four traits and three Pythia-160M variants, these synthetic sequences retain 40–92% of the transfer induced by the teacher's real sequences. For the elephant preference in four OLMo-1B models, they retain 5–36%. Prior work used a related but distinct manipulation, shuffling a teacher's numbers across its responses, and found that it largely eliminated transfer in instruction-tuned models (<a href="https://doi.org/10.1038/s41586-026-10319-8">Cloud et al.</a>; <a href="https://proceedings.iclr.cc/paper_files/paper/2026/hash/b51b50262b492dd89bb9cd3105a46702-Abstract-Conference.html">Schrodi et al.</a>). How much of the signal lives in number frequencies rather than in sequence structure therefore seems to vary across models.</p>
+<p>Which numbers carry the probability matters, not just the shape of the distribution. Permuting the probabilities among numbers with the same number of digits keeps the distribution's shape and entropy, yet in five of six comparisons it brings transfer down to near the control level. Retention also varies over pretraining: for dog in Pythia-160M, synthetic sequences retain roughly all of the same-checkpoint transfer at the 115k and 125k checkpoints, compared with 62% at the final checkpoint.</p>
+
+<figure>
+  <a href="figures/arms_by_checkpoint.png"><img src="figures/arms_by_checkpoint.png" width="1800" height="991" loading="lazy"
+       alt="Grouped bar chart of the percentage of transfer retained by six synthetic sequence constructions at eight Pythia-160M checkpoints."></a>
+  <figcaption><strong>Synthetic sequences retain roughly all same-checkpoint transfer at the 115k and 125k checkpoints, compared with 62% at the final checkpoint.</strong> Pythia-160M, dog preference, teacher and student at the same checkpoint. Bars give transfer as a percentage of that induced by the teacher's real sequences. <em>S</em><sub>all</sub> replaces every number with a draw from the teacher's first-number frequencies; <em>S</em><sub>n</sub> replaces only the first <em>n</em> and keeps the base model's remaining numbers; <em>T</em><sub>n</sub> replaces the first <em>n</em> and truncates the rest; <em>P</em><sub>all</sub> is <em>S</em><sub>all</sub> after permuting probabilities among numbers with the same number of digits.</figcaption>
+</figure>
+
+<h2>Soft labels: animal tokens matter, but not entirely</h2>
+<p>Soft-label distillation can expose the student to the teacher's probabilities for animal tokens even when the text contains no animal. Compared with its untuned base model, a teacher places tokens related to the target animal in its top 10 more than a hundred times as often, although most changes in its top 10 involve tokens unrelated to animals.</p>
+<p>To probe this, we use top-<em>K</em> on-policy distillation, which keeps only the teacher's <em>K</em> most likely tokens at each position in the loss. Restricting the loss to fewer tokens than the full vocabulary can increase transfer, which peaks at <em>K</em> = 5 to 30. We then remove the animal tokens from the loss entirely: 43 single-token spellings of ten candidate animals, excluded from both models' logits before the softmax and before the top <em>K</em> are chosen. Transfer drops sharply but stays above the baseline when teacher and student are both Pythia-160M. From Pythia-160M into Pythia-410M, almost none of it survives the removal. We may not have removed every token semantically related to the animal, so the remaining same-model transfer is not necessarily non-semantic.</p>
+
+<figure>
+  <a href="figures/topk_self_transfer_and_mask_placebo.png"><img src="figures/topk_self_transfer_and_mask_placebo.png" width="1800" height="851" loading="lazy"
+       alt="Left: transfer of the bear preference against the number of teacher tokens kept per position, peaking between 5 and 30. Right: at K equals 10, transfer falls from 0.436 to 0.071 when animal-name tokens are removed from the loss."></a>
+  <figcaption><strong>Removing animal-name tokens from the loss sharply reduces soft-label transfer, but not to zero.</strong> Top-<em>K</em> on-policy distillation of the bear preference, Pythia-160M teacher and student. (a) Transfer against the number <em>K</em> of teacher tokens kept at each position. (b) At <em>K</em> = 10, the standard loss (dark) next to the loss with the 43 animal-name tokens removed (light). Means over 3 students with 95% bootstrap intervals; transfer is measured against a control trained identically from the placebo teacher.</figcaption>
+</figure>
+
+<h2>Neither LoRA nor adaptive optimizers are required</h2>
+<p>We repeat the hard-label pipeline with one Pythia-160M teacher each for dog and lion, and change only how the student is trained: through a LoRA adapter or with all parameters updated, and with AdamW or with plain SGD without momentum, sweeping the learning rate for each combination.</p>
+<p>With LoRA, SGD transfers the trait at least as strongly as AdamW, but its best learning rate is several hundred times larger. <a href="https://arxiv.org/abs/2606.00995">Blank et al.</a> report no transfer under SGD and suggest that adaptive optimizers are necessary; a failure to observe transfer may instead reflect an incomplete learning-rate sweep, as <a href="https://arxiv.org/abs/2606.00831">Nief et al.</a> and <a href="https://arxiv.org/abs/2604.25783">Morgulis and Hewitt</a> also find transfer with SGD at a suitable learning rate. With full fine-tuning, AdamW gives no transfer at any of the eight learning rates we tested, while SGD does transfer, though more weakly than with LoRA. In this setting, strong transfer comes with some loss of language modeling ability: the students that transfer raise Pile cross-entropy by roughly 1 to 4 nats more than their controls.</p>
+
+<figure class="narrow">
+  <a href="figures/hard_label_sgd_fullft.png"><img src="figures/hard_label_sgd_fullft.png" width="1800" height="1434" loading="lazy"
+       alt="Transfer against student learning rate for dog and lion, for LoRA and full fine-tuning students trained with AdamW or plain SGD, and full fine-tuning transfer against the increase in Pile cross-entropy."></a>
+  <figcaption><strong>Plain SGD transfers the trait once its learning rate is tuned, and full fine-tuning transfers only with SGD in these experiments.</strong> Pythia-160M students trained for 20 epochs through a LoRA adapter (A) or with all parameters updated (B, C). (A, B) Transfer against the student's learning rate. (C) The full fine-tuning results plotted against the increase in Pile cross-entropy; hollow points are degraded students. Lines and bands are means over three seeds.</figcaption>
+</figure>
+
+<h2>Limitations</h2>
+<ul>
+  <li>We study a narrow kind of trait: preferences for animals, plus a small study on trees and colors.</li>
+  <li>Most detailed experiments use small pretrained base models, mainly Pythia-160M. We also show transfer in larger models and other families, but the mechanisms and strength of transfer may differ in larger or instruction-tuned models and for other kinds of traits.</li>
+  <li>Our strongest hard-label cross-model results often come after extended student distillation, which also degrades language modeling. The magnitudes may differ in practical distillation pipelines.</li>
+  <li>Comparisons at a fixed training endpoint can hide how transfer changes during student training: same-model transfer can peak early and decline, sometimes falling below cross-model transfer with the same teacher.</li>
+  <li>After animal-name tokens are removed from the loss, some same-model transfer remains; we may not have removed every token semantically related to the trait.</li>
+</ul>
+<p>The paper also covers more ground than this post: how the wording and placement of the preference in a teacher's documents changes what it transmits, whether steerability predicts transfer once teacher preference is accounted for, and how specific the transferred preference is to the target animal.</p>
+
+<h2>Video walkthrough</h2>
+<!-- Placeholder: replace the div with
+<iframe class="video" src="https://www.youtube-nocookie.com/embed/VIDEO_ID" title="Video walkthrough" allowfullscreen loading="lazy"></iframe>
+-->
+<div class="video placeholder">🎥 Video walkthrough coming soon</div>
+
+<h2>Citation</h2>
+<!-- Placeholder: replace XXXX.XXXXX with the arXiv ID once listed. -->
+<pre id="bibtex">@article{tang2026tracing,
+  title   = {Tracing Subliminal Learning Through Pretraining},
+  author  = {Tang, Angela and Anand, Vishesh and Paulo, Gon{\c{c}}alo},
+  journal = {arXiv preprint arXiv:XXXX.XXXXX},
+  year    = {2026}
+}</pre>
+<button class="copy" type="button" hidden>Copy</button>
+
+<h2>Acknowledgements</h2>
+<p>We thank EleutherAI and the Summer of Open AI Research (SOAR) program for mentorship, CoreWeave for the compute that enabled this work, and Coefficient Giving for funding it.</p>
+
+</main>
+
+<footer>
+  Angela Tang, Vishesh Anand and Gonçalo Paulo · EleutherAI SOAR · 2026
+</footer>
+
+<script>
+  const btn = document.querySelector(".copy");
+  if (navigator.clipboard) {
+    btn.hidden = false;
+    btn.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(document.getElementById("bibtex").textContent);
+      btn.textContent = "Copied";
+      setTimeout(() => { btn.textContent = "Copy"; }, 1500);
+    });
+  }
+</script>
+</body>
+</html>
