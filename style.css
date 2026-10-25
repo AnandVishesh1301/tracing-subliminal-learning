@@ -47,14 +47,6 @@ header.paper, footer {
   margin: 0 auto;
 }
 header.paper { padding: 88px 0 8px; }
-.kicker {
-  font-family: var(--sans);
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin: 0 0 16px;
-}
 h1 {
   font-family: var(--serif);
   font-weight: 500;
