@@ -95,27 +95,8 @@ h1 {
   color: var(--muted);
   cursor: default;
 }
-.soon-note { font-size: 13px; margin-top: 10px; }
 .ico { font-size: 14px; line-height: 1; }
 .btn.soon .ico { filter: grayscale(1); opacity: 0.7; }
-
-.video {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  border: 0;
-  border-radius: 6px;
-  margin-bottom: 20px;
-}
-.video.placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px dashed var(--rule);
-  font-family: var(--sans);
-  font-size: 14px;
-  color: var(--muted);
-}
 
 /* Figures */
 figure {
@@ -141,6 +122,7 @@ figcaption {
   color: var(--muted);
 }
 figcaption strong { color: var(--text); font-weight: 600; }
+figcaption p { margin: 0; }
 
 /* Body text */
 h2 {
@@ -195,6 +177,17 @@ pre {
   cursor: pointer;
 }
 .copy:hover { color: var(--text); }
+
+/* Footnotes */
+sup.fnref { font-size: 0.7em; line-height: 0; }
+sup.fnref a { text-decoration: none; }
+ol.footnotes {
+  border-top: 1px solid var(--rule);
+  padding-top: 16px;
+  font-size: 15px;
+  color: var(--muted);
+}
+ol.footnotes p { margin-bottom: 8px; }
 
 footer {
   padding: 24px 0 64px;
